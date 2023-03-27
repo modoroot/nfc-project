@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Aplicación de lectura/escritura de etiquetas NFC</title>
+    <script src="https://cdn.jsdelivr.net/npm/nfc-pcsc@0.8.1/dist/index.min.js"></script>
+</head>
+
+
+<body>
+    <h1>Lectura/escritura de etiquetas NFC</h1>
+    <button id="reader">Comenzar la lectura de etiquetas NFC</button>
+    <button id="writer">Escribir en una etiqueta NFC</button>
+</body>
+<script>
+    if ("NDEFReader" in window) {
+        console.log("Web NFC API is supported");
+    } else {
+        console.log("Web NFC API is not supported");
+    }
+    const reader = new NDEFReader();
+
+    // Función que se ejecuta cuando se detecta una etiqueta NFC
+    reader.addEventListener("reading", ({ message }) => {
+        console.log(`Contenido de la etiqueta: ${message.records[0].data}`);
+    });
+
+    // Función que se ejecuta en caso de error
+    reader.addEventListener("error", (event) => {
+        console.error(event);
+    });
+
+    // Comenzar la lectura de etiquetas NFC
+    reader.scan();
+    const writer = new NDEFWriter();
+
+    // Función que se ejecuta cuando se completa la escritura en la etiqueta
+    writer.addEventListener("writeend", () => {
+        console.log("¡Escritura completada!");
+    });
+
+    // Función que se ejecuta en caso de error
+    writer.addEventListener("error", (event) => {
+        console.error(event);
+    });
+
+    writer.writePermission().then(() => {
+        const message = [
+            new NDEFRecord({
+                recordType: "text",
+                data: "¡Hola mundo!"
+            })
+        ];
+
+        // Comenzar la escritura en la etiqueta NFC
+        writer.write(message);
+    }).catch((error) => {
+        console.error(error);
+    });
+
+
+</script>
+
+</html>
