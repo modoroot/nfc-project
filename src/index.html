@@ -1,18 +1,19 @@
 <!doctype html>
+
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="Sample illustrating the use of Web NFC.">
+    <meta name="description">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Web NFC Sample</title>
+    <title>Web NFC</title>
     <script>
         window.addEventListener('error', function (error) {
             if (ChromeSamples && ChromeSamples.setStatus) {
                 console.error(error);
-                ChromeSamples.setStatus(error.message + ' (Tu navegador no soporta esta característica.)');
+                ChromeSamples.setStatus(error.message + ' Tu navegador no soporta esta característica. Utiliza Chrome Android');
                 error.preventDefault();
             }
         });
@@ -20,7 +21,8 @@
 </head>
 
 <body>
-    <button id="scanButton">Leer</button>
+    <h1>Web NFC</h1>
+    <button id="scanButton">Escanear</button>
     <button id="writeButton">Escribir</button>
     <button id="makeReadOnlyButton">Modo lectura</button>
     <script>
@@ -50,59 +52,82 @@
             }
         };
     </script>
-    <h3>Mensajes</h3>
+
+    <h3>Salida</h3>
     <div id="output" class="output">
         <div id="content"></div>
         <div id="status"></div>
         <pre id="log"></pre>
     </div>
+
     <script>
         log = ChromeSamples.log;
         if (!("NDEFReader" in window))
-            ChromeSamples.setStatus("Utiliza Chrome Android");
+            ChromeSamples.setStatus("Web NFC no funciona en este dispositivo. Utiliza Chrome Android");
     </script>
-
-
     <script>
         scanButton.addEventListener("click", async () => {
 
             try {
                 const ndef = new NDEFReader();
                 await ndef.scan();
-                log("> Escaneando...");
+                log("> Esperando a escanear...");
 
                 ndef.addEventListener("readingerror", () => {
-                    log("Error en la lectura");
+                    log("Error en la lectura del NFC");
                 });
 
                 ndef.addEventListener("reading", ({ message, serialNumber }) => {
-                    log(`> Serial: ${serialNumber}`);
-                    log(`> Records: (${message.records.length})`);
-                    log(`> Record 1: ${message.records[0].recordType}`);
-                    log(`> Record 2: ${message.records[1].recordType}`);
+                    // Si el registro es de tipo "url"
+                    if (message.records[0].recordType == "url") {
+                        if ('toURL' in message.records[0]) {
+                            window.location.href = message.records[0].toURL();
+                        } else {
+                            const dataView = new DataView(message.records[0].data.buffer);
+                            const decoder = new TextDecoder('utf-8');
+                            const urlBytes = decoder.decode(dataView);
+                            window.location.href = urlBytes;
+                        }
+                    }
+                    // Si el registro es de tipo "text"
+                    else if (message.records[0].recordType == "text") {
+                        if ('toText' in message.records[0]) {
+                        } else {
+                            const dataView = new DataView(message.records[0].data.buffer);
+                            const decoder = new TextDecoder('utf-8');
+                            const textBytes = decoder.decode(dataView);
+                            alert(textBytes);
+                        }
+                    }
                 });
             } catch (error) {
-                log("Argh! " + error);
+                log(error);
             }
         });
+
 
         writeButton.addEventListener("click", async () => {
-
             try {
-                const ndef = new NDEFReader();
-                log("> Mensaje escrito");
+            const textRecord = new NDEFRecord('text', '¡Hola, mundo!');
+            const ndef = new NDEFWriter();
+            
+                await ndef.write(new NDEFMessage([textRecord]));
+                log('Datos escritos correctamente.');
             } catch (error) {
-                log("Error: " + error);
+                log(error);
             }
         });
 
+
         makeReadOnlyButton.addEventListener("click", async () => {
+            log("User clicked make read-only button");
+
             try {
                 const ndef = new NDEFReader();
                 await ndef.makeReadOnly();
-                log("La etiqueta está en modo lectura");
+                log("> Modo sólo lectura");
             } catch (error) {
-                log("Error: " + error);
+                log(error);
             }
         });
     </script>
