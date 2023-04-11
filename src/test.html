@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFC</title>
+</head>
+
+<body>
+    <p>
+        <button onclick="readTag()">Test NFC Read</button>
+        <button onclick="writeTag()">Test NFC Write</button>
+    </p>
+    <pre id="log"></pre>
+    <script>
+        /**
+         * lee el contenido de una etiqueta NFC
+         * @param {string} data 
+         */
+        async function readTag() {
+            if ("NDEFReader" in window) {
+                const ndef = new NDEFReader();
+                try {
+                    await ndef.scan();
+                    ndef.onreading = event => {
+                        const decoder = new TextDecoder();
+                        for (const record of event.message.records) {
+                            consoleLog("Tipo dato:  " + record.recordType);
+                            consoleLog("Datos:\n" + decoder.decode(record.data));
+                        }
+                    }
+                    // mensaje flotante diciendo que el botón ha sido pulsado
+                    alert("Botón lectura pulsado");
+                } catch (error) {
+                    consoleLog(error);
+                }
+            } else {
+                consoleLog("Web NFC is not supported.");
+            }
+
+        }
+        /**
+         * escribe una etiqueta NFC
+         * @param {string} data 
+         */
+        async function writeTag() {
+            if ("NDEFReader" in window) {
+                const ndef = new NDEFReader();
+                try {
+                    const inputData = prompt("Introduce la URL a escribir en la etiqueta NFC");
+                    await ndef.write({
+                        records: [{ recordType: "url", data: inputData }]
+                    });
+                } catch (error) {
+                    consoleLog(error);
+                }
+            } else {
+                consoleLog("Web NFC is not supported.");
+            }
+        }
+
+        function consoleLog(data) {
+            var logElement = document.getElementById('log');
+            logElement.innerHTML += data + '\n';
+        }
+    </script>
+</body>
+
+</html>
