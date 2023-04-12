@@ -10,6 +10,7 @@
 
     <title>Web NFC</title>
     <script>
+        // Para ejecutar la función NFC, se necesita Opera Android o Chrome Android
         window.addEventListener('error', function (error) {
             if (ChromeSamples && ChromeSamples.setStatus) {
                 console.error(error);
@@ -22,16 +23,27 @@
 
 <body>
     <h1>Web NFC</h1>
-    <button id="scanButton">Escanear</button>
-    <button onclick="writeTag()">Escribir</button>
-    <button id="makeReadOnlyButton">Modo lectura</button>
+    <button onclick="leerNfc()">Escanear</button>
+    <button id="confirmar">Confirmar</button>
+
+    <!-- lista checkboxs y un botón de confirmar -->
+    <div id="checkboxes">
+        <input type="checkbox" id="1" name="checkbox1">
+        <label for="1">1</label>
+        <input type="checkbox" id="2" name="checkbox2">
+        <label for="2">2</label>
+        <input type="checkbox" id="3" name="checkbox3">
+        <label for="3">3</label>
+        <input type="checkbox" id="4" name="checkbox4">
+        <label for="4">4</label>
+    </div>
+
     <script>
         var ChromeSamples = {
             log: function () {
                 var line = Array.prototype.slice.call(arguments).map(function (argument) {
                     return typeof argument === 'string' ? argument : JSON.stringify(argument);
                 }).join(' ');
-
                 document.querySelector('#log').textContent += line + '\n';
             },
 
@@ -67,17 +79,26 @@
     </script>
     <script>
         const { NDEFReader, NDEFWriter, NDEFRecord, NDEFMessage } = window;
-        scanButton.addEventListener("click", async () => {
+        //inicialización de forma global para poder cerrar y abrir el NDEFReader
+        let ndef = new NDEFReader();
+        /**
+         * Lee el contenido de una etiqueta NFC
+         * @param {string} data 
+         */
+        async function leerNfc() {
             try {
-                const ndef = new NDEFReader();
+                //si el NDEFReader está cerrado, se abre
+                if (ndef.state == "closed") {
+                    ndef = new NDEFReader();
+                }
+                //espera a que se encuentre una etiqueta NFC
                 await ndef.scan();
-                log("> Esperando a escanear...");
+                log("Esperando a escanear...");
 
                 ndef.addEventListener("readingerror", () => {
                     log("Error en la lectura del NFC");
                 });
-
-                ndef.addEventListener("reading", ({ message, serialNumber }) => {
+                ndef.addEventListener("reading", ({ message }) => {
                     // Si el registro es de tipo "url"
                     if (message.records[0].recordType == "url") {
                         if ('toURL' in message.records[0]) {
@@ -102,33 +123,98 @@
                 });
             } catch (error) {
                 log(error);
+            } finally {
+                //cierra el flujo de entrada de datos del NDEFReader
+                ndef.stopScanning();
             }
+        }
+
+        // Obtener una referencia al botón de confirmación
+        const btnConfirmar = document.getElementById('confirmar');
+
+        // Agregar un evento al botón de confirmación
+        btnConfirmar.addEventListener('click', async () => {
+            // Limpia la lista de los checkbox
+            checkboxesSeleccionados = [];
+            // Recorrer los checkbox
+            document.querySelectorAll('#checkboxes input[type="checkbox"]').forEach(checkbox => {
+                // Si el checkbox está marcado, agregarlo a la lista de checkboxes seleccionados
+                if (checkbox.checked) {
+                    checkboxesSeleccionados.push(checkbox.id);
+                }
+            });
+
+            // Establecer la variable de bloqueo en verdadero
+            escribiendoNfc = true;
+
+            // Bucle hasta que se escriba una etiqueta NFC
+            for (let i = 0; i < checkboxesSeleccionados.length; i++) {
+                const checkboxId = checkboxesSeleccionados[i];
+
+                // Llamar a la función escribirNfc() para cada checkbox seleccionado
+                await escribirNfc(checkboxId);
+
+                // Esperar un segundo antes de verificar si se escribió una etiqueta NFC
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Si se escribió una etiqueta NFC, salir del bucle
+                if (etiquetaNfcEscrita) {
+                    break;
+                }
+            }
+
+            // Establecer la variable de bloqueo en falso
+            escribiendoNfc = false;
+            // Establecer la variable de etiquetaNfcEscrita en falso
+            etiquetaNfcEscrita = false;
+            
         });
-        
-        /**
-         * escribe una etiqueta NFC
-         * @param {string} data 
-         */
-        async function writeTag() {
+
+        // Variable booleana para bloquear la ejecución de la función escribirNfc()
+        let escribiendoNfc = false;
+
+        // Variable booleana para indicar si se escribió una etiqueta NFC
+        let etiquetaNfcEscrita = false;
+
+        // Lista de checkboxes seleccionados
+        let checkboxesSeleccionados = [];
+
+        async function escribirNfc(checkboxId) {
+            //si el NDEFReader está cerrado, se abre
+            if (ndef.state == "closed") {
+                ndef = new NDEFReader();
+            }
+
             if ("NDEFReader" in window) {
-                const ndef = new NDEFReader();
                 try {
-                    const inputData = prompt("Introduce la URL a escribir en la etiqueta NFC");
+                    const inputData = prompt(`Introduce la URL a escribir en la etiqueta NFC para el checkbox ${checkboxId} (Ej: google.es)`);
+                    // Espera a que se encuentre una etiqueta NFC y escribe el contenido escrito por el usuario en el prompt
                     await ndef.write({
-                        records: [{ recordType: "url", data: inputData }]
+                        records: [{ recordType: "url", data: "https://" + inputData }]
+                    }).then(() => {
+                        consoleLog(`Etiqueta NFC para el checkbox ${checkboxId} escrita correctamente: ${inputData}`);
+                        etiquetaNfcEscrita = true;
                     });
-                    consoleLog("Etiqueta NFC escrita correctamente: " + inputData);
                 } catch (error) {
-                    consoleLog(error);
+                    consoleLog(`Error al escribir en la etiqueta NFC para el checkbox ${checkboxId}: ${error}`);
+                } finally {
+                    ndef.stopScanning();
+                    // Establecer la variable de bloqueo en falso
+                    escribiendoNfc = false;
                 }
             } else {
                 consoleLog("Navegador no soportado");
+                // Establecer la variable de bloqueo en falso
+                escribiendoNfc = false;
             }
         }
+
         function consoleLog(data) {
             var logElement = document.getElementById('log');
             logElement.innerHTML += data + '\n';
         }
+
+
     </script>
 </body>
 
