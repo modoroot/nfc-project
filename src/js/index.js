@@ -26,8 +26,7 @@ log = ChromeSamples.log;
 if (!("NDEFReader" in window))
   ChromeSamples.setStatus("Web NFC no funciona en este dispositivo. Utiliza Chrome Android");
 const { NDEFReader, NDEFWriter, NDEFRecord, NDEFMessage } = window;
-//inicialización de forma global para poder cerrar y abrir el NDEFReader
-let ndef = new NDEFReader();
+
 /**
  * Lee el contenido de una etiqueta NFC y redirige a la URL guardada en la etiqueta NFC
  * @param {string} data - Contenido de la etiqueta NFC
@@ -65,11 +64,17 @@ async function leerNfc() {
     ndef.stopScanning();
   }
 }
+//inicialización de forma global para poder cerrar y abrir el NDEFReader
+let ndef = new NDEFReader();
+let controller;
+
 /**
  * Escribe una URL en una etiqueta NFC
  * 
  */
 async function escribirNfc() {
+  const inputData = document.getElementById("url-input").value;
+
   //si el NDEFReader está cerrado, se abre
   if (ndef.state == "closed") {
     ndef = new NDEFReader();
@@ -77,9 +82,8 @@ async function escribirNfc() {
 
   if ("NDEFReader" in window) {
     try {
-      const inputData = prompt(`Introduce la URL a escribir en la etiqueta NFC (Ej: google.es)`);
-      // Espera a que se encuentre una etiqueta NFC y escribe el contenido escrito por el usuario en el prompt
-      const controller = new AbortController();
+      // Espera a que se encuentre una etiqueta NFC y escribe el contenido introducido en el input
+      controller = new AbortController();
       await Promise.race([
         ndef.write({
           records: [{ recordType: "url", data: "https://" + inputData }]
@@ -87,19 +91,21 @@ async function escribirNfc() {
         new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000)),
         new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(new Error('Aborted')))),
       ]);
-      consoleLog(`Etiqueta NFC escrita correctamente: ${inputData}`);
+      console.log(`Etiqueta NFC escrita correctamente: ${inputData}`);
       // Cancelar la detección automática de etiquetas NFC
       controller.abort();
+      cerrarModal();
     } catch (error) {
-      consoleLog(`Error al escribir en la etiqueta NFC: ${error}`);
+      console.log(`Error al escribir en la etiqueta NFC: ${error}`);
     } finally {
       //cierra el flujo de entrada de datos del NDEFReader
       ndef.stopScanning();
     }
   } else {
-    consoleLog("Navegador no soportado");
+    console.log("Navegador no soportado");
   }
 }
+
 
 
 function consoleLog(data) {

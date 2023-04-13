@@ -12,22 +12,8 @@ var acceptBtn = document.getElementsByClassName("accept-btn")[0];
 var closeBtn = document.getElementsByClassName("close-btn")[0];
 var outputDiv = document.getElementById("content");
 
-// Cuando se haga clic en el botón, abrir la ventana modal
-btn.onclick = function () {
-    modal.style.display = "flex";
-}
-
 // Cuando se haga clic en la X de cerrar, cerrar la ventana modal
 span.onclick = function () {
-    modal.style.display = "none";
-}
-
-acceptBtn.onclick = function () {
-
-}
-
-// Cuando se haga clic en Cerrar, cerrar la ventana modal
-closeBtn.onclick = function () {
     modal.style.display = "none";
 }
 
@@ -37,3 +23,13 @@ window.onclick = function (event) {
         modal.style.display = "none";
     }
 }
+
+function mostrarModal() {
+    const modal = document.getElementById("myModal");
+    modal.style.display = "block";
+  }
+  
+  function cerrarModal() {
+    const modal = document.getElementById("myModal");
+    modal.style.display = "none";
+  }

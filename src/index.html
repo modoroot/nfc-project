@@ -24,7 +24,7 @@
 <body>
     <h1>Web NFC</h1>
     <button onclick="leerNfc()">Escanear</button>
-    <button id="confirmar" onclick="escribirNfc()">Confirmar</button>
+    <button id="myBtn" onclick="mostrarModal()">Confirmar</button>
 
     <!-- lista checkboxs y un botón de confirmar -->
     <div id="checkboxes">
@@ -37,17 +37,17 @@
         <input type="checkbox" id="4" name="checkbox4">
         <label for="4">4</label>
     </div>
-    <button id="myBtn">Abrir ventana modal</button>
 
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Introduce la URL</h2>
             <input class="url-input" type="text" id="url-input" placeholder="Escribe aquí la URL...">
-            <button class="accept-btn">Aceptar</button>
-            <button class="close-btn">Cerrar</button>
+            <button class="accept-btn" onclick="escribirNfc()">Aceptar</button>
+            <button class="close-btn" onclick="cerrarModal()">Cerrar</button>
         </div>
     </div>
+
 
     <h3>Salida</h3>
     <div id="output" class="output">
