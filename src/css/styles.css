@@ -1,3 +1,46 @@
+body {
+  background-color: #f2f2f2;
+}
+
+h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+#checkboxes input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 5px;
+  border: 2px solid #4CAF50;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+#checkboxes input[type="checkbox"]:checked {
+  background-color: #4CAF50;
+}
+
+#checkboxes input[type="checkbox"]+label {
+  color: #4CAF50;
+}
+
+#checkboxes input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0px 0px 5px #4CAF50;
+}
+
 #myBtn {
   background-color: #4CAF50;
   border: none;
@@ -12,24 +55,24 @@
 }
 
 .modal {
-  display: none; 
-  position: fixed; 
-  z-index: 1; 
+  display: none;
+  position: fixed;
+  z-index: 1;
   left: 0;
   top: 0;
-  width: 100%; 
-  height: 100%; 
-  overflow: auto; 
-  background-color: rgba(0,0,0,0.4); 
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 
 .modal-content {
   background-color: #fefefe;
-  margin: 15% auto; 
+  margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%; 
+  width: 80%;
 }
 
 .close {
@@ -39,29 +82,30 @@
   font-weight: bold;
 }
 
-.accept-btn, .close-btn {
+.accept-btn,
+.close-btn {
   background-color: #4CAF50;
   border: none;
   color: white;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
-  display: block; 
+  display: block;
   font-size: 16px;
-  margin: 10px auto; 
+  margin: 10px auto;
   cursor: pointer;
 }
 
 .modal {
-  display: none; 
-  position: fixed; 
-  z-index: 1; 
+  display: none;
+  position: fixed;
+  z-index: 1;
   left: 0;
   top: 0;
-  width: 100%; 
-  height: 100%; 
-  overflow: auto; 
-  background-color: rgba(0,0,0,0.4); 
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 

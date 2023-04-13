@@ -22,17 +22,8 @@ span.onclick = function () {
     modal.style.display = "none";
 }
 
-// Cuando se haga clic en Aceptar, guardar la URL y mostrarla en la salida
 acceptBtn.onclick = function () {
-    // Obtener el valor del campo de entrada de texto
-    var urlInput = document.getElementById("url-input");
-    var url = urlInput.value;
 
-    // Guardar la URL en la salida
-    outputDiv.innerHTML = url;
-
-    // Cerrar la ventana modal
-    modal.style.display = "none";
 }
 
 // Cuando se haga clic en Cerrar, cerrar la ventana modal
