@@ -64,14 +64,9 @@ async function leerNfc() {
     ndef.stopScanning();
   }
 }
-//inicialización de forma global para poder cerrar y abrir el NDEFReader
+
 let ndef = new NDEFReader();
 let controller;
-
-/**
- * Escribe una URL en una etiqueta NFC
- * 
- */
 async function escribirNfc() {
   const inputData = document.getElementById("url-input").value;
   mostrarMensaje("Coloca tu etiqueta NFC detrás del móvil en la parte superior");
@@ -88,7 +83,7 @@ async function escribirNfc() {
         ndef.write({
           records: [{ recordType: "url", data: "https://" + inputData }]
         }),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000)),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 30000)),
         new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(new Error('Aborted')))),
       ]);
       consoleLog(`Etiqueta NFC escrita correctamente: ${inputData}`);

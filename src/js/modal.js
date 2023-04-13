@@ -28,7 +28,7 @@ function cerrarModal() {
 }
 
 /**
- * Muestra un mensaje en la ventana modal
+ * Muestra un mensaje en la ventana modal durante 5 segundos
  * @param {*} mensaje 
  */
 function mostrarMensaje(mensaje) {
@@ -38,4 +38,12 @@ function mostrarMensaje(mensaje) {
     mensajeEl.textContent = mensaje;
     modalContent.insertBefore(mensajeEl, modalContent.firstChild);
     modal.style.display = "block";
+    setTimeout(() => {
+        mensajeEl.remove();
+        if (modalContent.children.length === 0) {
+            modal.style.display = "none";
+        }
+    }, 5000);
 }
+
+
