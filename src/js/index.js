@@ -74,7 +74,7 @@ let controller;
  */
 async function escribirNfc() {
   const inputData = document.getElementById("url-input").value;
-
+  mostrarMensaje("Coloca tu etiqueta NFC detrás del móvil en la parte superior");
   //si el NDEFReader está cerrado, se abre
   if (ndef.state == "closed") {
     ndef = new NDEFReader();
@@ -91,22 +91,20 @@ async function escribirNfc() {
         new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000)),
         new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(new Error('Aborted')))),
       ]);
-      console.log(`Etiqueta NFC escrita correctamente: ${inputData}`);
+      consoleLog(`Etiqueta NFC escrita correctamente: ${inputData}`);
       // Cancelar la detección automática de etiquetas NFC
       controller.abort();
       cerrarModal();
     } catch (error) {
-      console.log(`Error al escribir en la etiqueta NFC: ${error}`);
+      consoleLog(`Error al escribir en la etiqueta NFC: ${error}`);
     } finally {
       //cierra el flujo de entrada de datos del NDEFReader
       ndef.stopScanning();
     }
   } else {
-    console.log("Navegador no soportado");
+    consoleLog("Navegador no soportado");
   }
 }
-
-
 
 function consoleLog(data) {
   var logElement = document.getElementById('log');
