@@ -7,7 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/styles.css">
+
     <title>Web NFC</title>
     <script>
         // Para ejecutar la función NFC, se necesita Opera Android o Chrome Android
@@ -23,8 +24,11 @@
 
 <body>
     <h1>Web NFC</h1>
-    <button onclick="leerNfc()">Escanear</button>
-    <button id="myBtn" onclick="mostrarModal()">Confirmar</button>
+    <div class="botones">
+        <button onclick="leerNfc()">Escanear</button>
+        <button id="confirmar">Confirmar</button>
+        <button id="escritura-rapida">Escritura rápida</button>
+    </div>
 
     <!-- lista checkboxs y un botón de confirmar -->
     <div id="checkboxes">
@@ -41,9 +45,7 @@
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Introduce la URL</h2>
-            <input class="url-input" type="text" id="url-input" placeholder="Escribe aquí la URL...">
-            <button class="accept-btn" onclick="escribirNfc()">Aceptar</button>
+            <h2>Coloca el NFC en la parte trasera superior</h2>
             <button class="close-btn" onclick="cerrarModal()">Cerrar</button>
         </div>
     </div>
