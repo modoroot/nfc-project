@@ -131,7 +131,9 @@ async function escribirNfc(checkboxId) {
       const inputData = prompt(`Introduce la URL a escribir en la etiqueta NFC para el checkbox ${checkboxId} (Ej: google.es)`);
       // Espera a que se encuentre una etiqueta NFC y escribe el contenido escrito por el usuario en el prompt
       await ndef.write({
-        records: [{ recordType: "url", data: "https://" + inputData }]
+        records: [{ recordType: "url", data: "https://" + inputData },
+                  { recordType: "text", data: checkboxId }
+      ]
       }).then(() => {
         consoleLog(`Etiqueta NFC para el checkbox ${checkboxId} escrita correctamente: ${inputData}`);
         etiquetaNfcEscrita = true;
@@ -149,7 +151,10 @@ async function escribirNfc(checkboxId) {
     escribiendoNfc = false;
   }
 }
-
+/**
+ * Escribe una lista entera de NFC de forma seguida
+ * @param {*} checkboxId id del checkbox actual
+ */
 async function escrituraRapidaNfc(checkboxId) {
   ndef = new NDEFReader();
   if ("NDEFReader" in window) {
@@ -157,7 +162,9 @@ async function escrituraRapidaNfc(checkboxId) {
       mostrarModal();
       // Espera a que se encuentre una etiqueta NFC y escribe el contenido escrito por el usuario en el prompt
       await ndef.write({
-        records: [{ recordType: "url", data: "https://google.es" }]
+        records: [{ recordType: "url", data: "https://google.es" },
+        { recordType: "text", data: checkboxId }
+        ],
       }).then(() => {
         console.log(`Etiqueta NFC para el checkbox ${checkboxId} escrita correctamente`);
         etiquetaNfcEscrita = true;
@@ -176,6 +183,7 @@ async function escrituraRapidaNfc(checkboxId) {
     escribiendoNfc = false;
   }
 }
+
 
 function consoleLog(data) {
   var logElement = document.getElementById('log');
