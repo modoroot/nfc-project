@@ -5,22 +5,9 @@ var ChromeSamples = {
     }).join(' ');
     document.querySelector('#log').textContent += line + '\n';
   },
-
-  clearLog: function () {
-    document.querySelector('#log').textContent = '';
-  },
-
   setStatus: function (status) {
     document.querySelector('#status').textContent = status;
   },
-
-  setContent: function (newContent) {
-    var content = document.querySelector('#content');
-    while (content.hasChildNodes()) {
-      content.removeChild(content.lastChild);
-    }
-    content.appendChild(newContent);
-  }
 };
 
 log = ChromeSamples.log;
